@@ -46,10 +46,10 @@ import com.cesoft.bluetooth.ui.theme.BluetoothTheme
 import java.util.Timer
 import java.util.TimerTask
 
-private val LocalKeyEventHandlers= compositionLocalOf<MutableList<KeyEventHandler>> {
-    error("LocalKeyEventHandlers is not provided")
-}
-typealias KeyEventHandler = (Int, KeyEvent) -> Boolean
+//private val LocalKeyEventHandlers= compositionLocalOf<MutableList<KeyEventHandler>> {
+//    error("LocalKeyEventHandlers is not provided")
+//}
+//typealias KeyEventHandler = (Int, KeyEvent) -> Boolean
 class MainActivity : ComponentActivity() {
 
     /// ENABLE BT----------------------------------------------
@@ -159,21 +159,24 @@ class MainActivity : ComponentActivity() {
             return
         }
         setContent {
-            CompositionLocalProvider(LocalKeyEventHandlers provides keyEventHandlers) {
-                BluetoothTheme {
-                    Content2()
-                }
+//            CompositionLocalProvider(LocalKeyEventHandlers provides keyEventHandlers) {
+//                BluetoothTheme {
+//                    Content()
+//                }
+//            }
+            BluetoothTheme {
+                Content2()
             }
         }
     }
 
     /// MAIN ---------------------------------------------------------------------------------------
-    private val keyEventHandlers = mutableListOf<KeyEventHandler>()
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        //android.util.Log.e("AAA", "onKeyDown----- ${event.displayLabel}  /// $keyCode / $event")
-        return keyEventHandlers.reversed().any { it(keyCode, event) } || super.onKeyDown(keyCode, event)
-    }
+//    private val keyEventHandlers = mutableListOf<KeyEventHandler>()
+//
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        //android.util.Log.e("AAA", "onKeyDown----- ${event.displayLabel}  /// $keyCode / $event")
+//        return keyEventHandlers.reversed().any { it(keyCode, event) } || super.onKeyDown(keyCode, event)
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,20 +194,20 @@ class MainActivity : ComponentActivity() {
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Composable
-    fun ListenKeyEvents(handler: KeyEventHandler) {
-        val handlerState = rememberUpdatedState(handler)
-        val eventHandlers = LocalKeyEventHandlers.current
-        DisposableEffect(handlerState) {
-            val localHandler: KeyEventHandler = { code, event ->
-                handlerState.value(code, event)
-            }
-            eventHandlers.add(localHandler)
-            onDispose {
-                eventHandlers.remove(localHandler)
-            }
-        }
-    }
+//    @Composable
+//    fun ListenKeyEvents(handler: KeyEventHandler) {
+//        val handlerState = rememberUpdatedState(handler)
+//        val eventHandlers = LocalKeyEventHandlers.current
+//        DisposableEffect(handlerState) {
+//            val localHandler: KeyEventHandler = { code, event ->
+//                handlerState.value(code, event)
+//            }
+//            eventHandlers.add(localHandler)
+//            onDispose {
+//                eventHandlers.remove(localHandler)
+//            }
+//        }
+//    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     @Composable
     private fun Content2() {
@@ -219,9 +222,9 @@ class MainActivity : ComponentActivity() {
                 }
                 .focusable()
                 .onKeyEvent {
-                    if(it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) return@onKeyEvent true
+                    if (it.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) return@onKeyEvent true
                     android.util.Log.e("AA", "onKeyEvent-------------${it.nativeKeyEvent}")
-                    if( it.key != Key.ShiftLeft) {
+                    if (it.key != Key.ShiftLeft) {
                         addSeparator(it.nativeKeyEvent.displayLabel, list)
                     }
                     true
@@ -241,32 +244,28 @@ class MainActivity : ComponentActivity() {
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Composable
-    private fun Content() {
-//    val focusRequester = remember { FocusRequester() }
-//    LaunchedEffect(Unit) {
-//        focusRequester.requestFocus()
+//    @Composable
+//    private fun Content() {
+//        val list = remember { mutableStateOf("") }
+//        ListenKeyEvents { code, event ->
+//            //android.util.Log.e("AAA", "Content:ListenKeyEvents------ ${event.displayLabel}  /// $code, $event")
+//            addSeparator(event.displayLabel, list)
+//            true
+//        }
+//        Text(
+//            text = list.value,
+//            minLines = 10,
+//            textAlign = TextAlign.Start,
+//            modifier = Modifier.fillMaxSize()
+//        )
 //    }
-        val list = remember { mutableStateOf("") }
-        ListenKeyEvents { code, event ->
-            //android.util.Log.e("AAA", "Content:ListenKeyEvents------ ${event.displayLabel}  /// $code, $event")
-            addSeparator(event.displayLabel, list)
-            true
-        }
-        Text(
-            text = list.value,
-            minLines = 10,
-            textAlign = TextAlign.Start,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-    @Preview
-    @Composable
-    private fun Content_preview() {
-        BluetoothTheme {
-            Content()
-        }
-    }
+//    @Preview
+//    @Composable
+//    private fun Content_preview() {
+//        BluetoothTheme {
+//            Content()
+//        }
+//    }
 }
 
 
@@ -279,11 +278,6 @@ private fun addSeparator(c: Char, list: MutableState<String>) {
     val offset = System.currentTimeMillis() - time
     time = System.currentTimeMillis()
     android.util.Log.e("AA", "addSeparator------ $c / $line / time=$offset")
-//    if(t.endsWith(',') || t.endsWith('\r') || t.endsWith('\n')) {
-//        android.util.Log.e("AA", "addSeparator------ SEPARATOR")
-//        return
-//    }
-    //text.value = t
     line.append(c)
     timerTask?.cancel()
     timer?.cancel()
@@ -297,143 +291,3 @@ private fun addSeparator(c: Char, list: MutableState<String>) {
     }
     timer?.schedule(timerTask, 150)
 }
-
-
-//        val bluetoothAvailable = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
-//        val bluetoothLEAvailable = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
-//        android.util.Log.e("AAA", "------- $bluetoothAvailable / $bluetoothLEAvailable")
-
-//        if(bluetoothManager.adapter == null) {
-//            android.util.Log.e("AAA", "------- Device doesn't support Bluetooth")
-//        }
-//        if(VERSION.SDK_INT >= VERSION_CODES.S) {
-//            val btPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
-//            android.util.Log.e("AAA", "------- btPermission = $btPermission")
-//        }
-//checkPermissions()
-
-//...
-//        val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter.bondedDevices
-//        pairedDevices?.forEach { device ->
-//            android.util.Log.e("AAA", "BT------------ addr=${device.address} - type=${device.type} - name=${device.name} - class=${device.bluetoothClass.majorDeviceClass}/${device.bluetoothClass.deviceClass} - ${device.bondState}")
-//            if(device.name.contains("BS80")) {// && device.bluetoothClass.deviceClass == 540)
-//                for(uuid in device.uuids) {
-//                    android.util.Log.e("AAA", "BT------------BS80:  uuid=${uuid}")
-//                }
-//            }
-//        }
-
-
-
-/*
-* Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    //Text("Bluetooth test")
-                    val data = remember { mutableStateOf("") }
-                    TextField(
-                        value = data.value,
-                        onValueChange = {
-android.util.Log.e("AAA", "----------------------------- $it")
-                            data.value = it
-//                            CoroutineScope(SupervisorJob()).launch(Dispatchers.Default) {
-//                                delay(300)
-//                                data.value += ",\r\n"
-//                            }
-                        },
-                        //selection = TextRange(data.value.length-2),
-                        modifier = Modifier.focusRequester(focusRequester),
-                        minLines = 10,
-                        maxLines = 100
-                    )
-                }
-            }*/
-
-
-
-/*
-               val socket = device.createRfcommSocketToServiceRecord(device.uuids[0].uuid)
-               //socket.close()
-               try {
-                   socket.connect()
-               }catch (e: Exception) {
-                   android.util.Log.e("AAA", "connect---------e=$e")
-               }
-
-               var hidDevice: BluetoothHidDevice? = null
-               val profileListener = object : BluetoothProfile.ServiceListener {
-                   override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
-                       android.util.Log.e("AAA", "onServiceConnected--------- profile=$profile==${BluetoothProfile.HID_DEVICE} , proxy=$proxy")
-                       if(profile == BluetoothProfile.HID_DEVICE) hidDevice = proxy as BluetoothHidDevice
-                   }
-                   override fun onServiceDisconnected(profile: Int) {
-                       android.util.Log.e("AAA", "onServiceDisconnected--------- profile=$profile==${BluetoothProfile.HID_DEVICE}")
-                       if (profile == BluetoothProfile.HID_DEVICE) hidDevice = null
-                   }
-               }
-               bluetoothAdapter.getProfileProxy(this, profileListener, BluetoothProfile.HID_DEVICE)
-
-
-               bluetoothAdapter.closeProfileProxy(BluetoothProfile.HEADSET, hidDevice)
-               //socket.close()*/
-
-/*
-class MyBluetoothService(private val handler: Handler) {
-
-    private inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
-
-        private val mmInStream: InputStream = mmSocket.inputStream
-        private val mmOutStream: OutputStream = mmSocket.outputStream
-        private val mmBuffer: ByteArray = ByteArray(1024)
-
-        override fun run() {
-            var numBytes: Int
-            while(true) {
-                numBytes = try {
-                    mmInStream.read(mmBuffer)
-                } catch (e: IOException) {
-                    android.util.Log.d("THREAD", "Input stream was disconnected", e)
-                    break
-                }
-
-                // Send the obtained bytes to the UI activity.
-                val readMsg = handler.obtainMessage(MESSAGE_READ, numBytes, -1, mmBuffer)
-                readMsg.sendToTarget()
-            }
-        }
-
-        // Call this from the main activity to send data to the remote device.
-        fun write(bytes: ByteArray) {
-            try {
-                mmOutStream.write(bytes)
-            } catch (e: IOException) {
-                Log.e(TAG, "Error occurred when sending data", e)
-
-                // Send a failure message back to the activity.
-                val writeErrorMsg = handler.obtainMessage(MESSAGE_TOAST)
-                val bundle = Bundle().apply {
-                    putString("toast", "Couldn't send data to the other device")
-                }
-                writeErrorMsg.data = bundle
-                handler.sendMessage(writeErrorMsg)
-                return
-            }
-
-            // Share the sent message with the UI activity.
-            val writtenMsg = handler.obtainMessage(
-                MESSAGE_WRITE, -1, -1, mmBuffer)
-            writtenMsg.sendToTarget()
-        }
-
-        // Call this method from the main activity to shut down the connection.
-        fun cancel() {
-            try {
-                mmSocket.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "Could not close the connect socket", e)
-            }
-        }
-    }
-}*/
-
